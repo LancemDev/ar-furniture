@@ -82,9 +82,49 @@
             }
         });
 
-        // Furniture model definitions (same as previous)
+        // Furniture model definitions
         const furnitureModels = {
-            // ... [previous furniture models code remains the same]
+            chair: {
+                geometry: 'box',
+                width: 0.5,
+                height: 1,
+                depth: 0.5,
+                color: '#4a4a4a',
+                details: [
+                    { geometry: 'box', width: 0.5, height: 0.1, depth: 0.5, color: '#3a3a3a', position: { x: 0, y: 0.45, z: 0 } }, // Seat
+                    { geometry: 'box', width: 0.1, height: 0.5, depth: 0.1, color: '#3a3a3a', position: { x: -0.2, y: 0.25, z: -0.2 } }, // Leg 1
+                    { geometry: 'box', width: 0.1, height: 0.5, depth: 0.1, color: '#3a3a3a', position: { x: 0.2, y: 0.25, z: -0.2 } }, // Leg 2
+                    { geometry: 'box', width: 0.1, height: 0.5, depth: 0.1, color: '#3a3a3a', position: { x: -0.2, y: 0.25, z: 0.2 } }, // Leg 3
+                    { geometry: 'box', width: 0.1, height: 0.5, depth: 0.1, color: '#3a3a3a', position: { x: 0.2, y: 0.25, z: 0.2 } }  // Leg 4
+                ]
+            },
+            table: {
+                geometry: 'box',
+                width: 1,
+                height: 0.6,
+                depth: 0.7,
+                color: '#8B4513',
+                details: [
+                    { geometry: 'box', width: 1, height: 0.1, depth: 0.7, color: '#7B3413', position: { x: 0, y: 0.25, z: 0 } }, // Tabletop
+                    { geometry: 'box', width: 0.1, height: 0.5, depth: 0.1, color: '#7B3413', position: { x: -0.45, y: 0, z: -0.3 } }, // Leg 1
+                    { geometry: 'box', width: 0.1, height: 0.5, depth: 0.1, color: '#7B3413', position: { x: 0.45, y: 0, z: -0.3 } }, // Leg 2
+                    { geometry: 'box', width: 0.1, height: 0.5, depth: 0.1, color: '#7B3413', position: { x: -0.45, y: 0, z: 0.3 } }, // Leg 3
+                    { geometry: 'box', width: 0.1, height: 0.5, depth: 0.1, color: '#7B3413', position: { x: 0.45, y: 0, z: 0.3 } }  // Leg 4
+                ]
+            },
+            sofa: {
+                geometry: 'box',
+                width: 1.5,
+                height: 0.8,
+                depth: 0.9,
+                color: '#708090',
+                details: [
+                    { geometry: 'box', width: 1.5, height: 0.4, depth: 0.9, color: '#607080', position: { x: 0, y: 0.2, z: 0 } }, // Seat
+                    { geometry: 'box', width: 1.5, height: 0.4, depth: 0.1, color: '#607080', position: { x: 0, y: 0.6, z: -0.4 } }, // Backrest
+                    { geometry: 'box', width: 0.1, height: 0.4, depth: 0.9, color: '#607080', position: { x: -0.7, y: 0.2, z: 0 } }, // Armrest 1
+                    { geometry: 'box', width: 0.1, height: 0.4, depth: 0.9, color: '#607080', position: { x: 0.7, y: 0.2, z: 0 } }  // Armrest 2
+                ]
+            }
         };
 
         // Remove loading overlay when scene is loaded
