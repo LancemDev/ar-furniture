@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR Furniture Placement</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aframe/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ar.js@2.2.2/aframe/build/aframe-ar.min.js"></script>
+    <style>
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            font-family: Arial, sans-serif;
+        }
+        #furniture-menu {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255,255,255,0.8);
+            padding: 10px;
+            border-radius: 10px;
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+        .furniture-btn {
+            padding: 10px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #instructions {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <div id="instructions">
+        Point camera at a flat surface. Tap to place furniture.
+    </div>
+
+    <div id="furniture-menu">
+        <button class="furniture-btn" data-model="chair">Chair</button>
+        <button class="furniture-btn" data-model="table">Table</button>
+        <button class="furniture-btn" data-model="sofa">Sofa</button>
+    </div>
+
+    <a-scene 
+        embedded 
+        arjs="sourceType: webcam; debugUIEnabled: false;"
+        renderer="antialias: true; colorManagement: true;"
+    >
+        <a-entity id="furniture-container"></a-entity>
+
+        <!-- Camera and cursor -->
+        <a-entity camera></a-entity>
+        <a-cursor 
+            raycaster="objects: .placeable"
+            cursor="fuse: false"
+            color="#4CC3D9">
+        </a-cursor>
+    </a-scene>
+
+    <script>
+        // Furniture model definitions using primitive shapes
+        const furnitureModels = {
+            chair: {
+                geometry: 'box',
+                width: 0.5,
+                height: 1,
+                depth: 0.5,
+                color: '#4a4a4a'
+            },
+            table: {
+                geometry: 'box',
+                width: 1,
+                height: 0.6,
+                depth: 0.7,
+                color: '#8B4513'
+            },
+            sofa: {
+                geometry: 'box',
+                width: 1.5,
+                height: 0.8,
+                depth: 0.9,
+                color: '#708090'
+            }
+        };
+
+        // Current selected furniture type
+        let currentFurnitureType = 'chair';
+
+        // Select furniture type
+        document.querySelectorAll('.furniture-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                currentFurnitureType = this.dataset.model;
+                document.querySelectorAll('.furniture-btn').forEach(b => b.style.background = '#f0f0f0');
+                this.style.background = '#87CEFA';
+            });
+        });
+
+        // AR Scene Setup
+        const scene = document.querySelector('a-scene');
+        const furnitureContainer = document.getElementById('furniture-container');
+
+        // Place furniture on tap
+        scene.addEventListener('click', function(event) {
+            // Get current furniture model specs
+            const modelSpec = furnitureModels[currentFurnitureType];
+
+            // Create furniture entity
+            const furniture = document.createElement('a-entity');
+            
+            // Create primitive geometry
+            const geometryEntity = document.createElement('a-' + modelSpec.geometry);
+            geometryEntity.setAttribute('width', modelSpec.width);
+            geometryEntity.setAttribute('height', modelSpec.height);
+            geometryEntity.setAttribute('depth', modelSpec.depth);
+            geometryEntity.setAttribute('color', modelSpec.color);
+            
+            // Add geometry to furniture entity
+            furniture.appendChild(geometryEntity);
+            
+            // Set class for interactions
+            furniture.setAttribute('class', 'placeable');
+            
+            // Use raycaster to place on detected surface
+            const camera = document.querySelector('a-entity[camera]');
+            const cursorPosition = camera.getAttribute('position');
+            
+            // Slight adjustment to place in front of camera
+            furniture.setAttribute('position', {
+                x: cursorPosition.x, 
+                y: cursorPosition.y - 0.5, 
+                z: cursorPosition.z - 1
+            });
+
+            // Add rotation
+            furniture.setAttribute('rotation', '0 0 0');
+
+            // Add interaction component
+            furniture.setAttribute('furniture-interaction', '');
+
+            // Add to scene
+            furnitureContainer.appendChild(furniture);
+        });
+
+        // Enhanced Interaction Component
+        AFRAME.registerComponent('furniture-interaction', {
+            init: function() {
+                const el = this.el;
+                
+                // Rotation on long press
+                el.addEventListener('mousedown', (e) => {
+                    this.startRotation = Date.now();
+                });
+                
+                el.addEventListener('mouseup', (e) => {
+                    const duration = Date.now() - this.startRotation;
+                    if (duration > 500) {  // Long press detected
+                        const currentRotation = el.getAttribute('rotation');
+                        el.setAttribute('rotation', {
+                            x: currentRotation.x,
+                            y: currentRotation.y + 45,  // Rotate 45 degrees
+                            z: currentRotation.z
+                        });
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
